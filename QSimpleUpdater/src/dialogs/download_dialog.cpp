@@ -68,11 +68,12 @@ void DownloadDialog::beginDownload (const QUrl& url)
     m_start_time = QDateTime::currentDateTime().toTime_t();
 
     // Update the progress bar value automatically
-    connect (m_reply, SIGNAL (downloadProgress (qint64, qint64)), this,
-             SLOT (updateProgress (qint64, qint64)));
+    connect (m_reply, SIGNAL (downloadProgress (qint64, qint64)),
+             this,      SLOT (updateProgress (qint64, qint64)));
 
     // Write the file to the hard disk once the download is finished
-    connect (m_reply, SIGNAL (finished()), this, SLOT (downloadFinished()));
+    connect (m_reply, SIGNAL (finished()),
+             this,      SLOT (downloadFinished()));
 
     // Show the dialog
     showNormal();
@@ -89,14 +90,11 @@ void DownloadDialog::installUpdate (void)
     msg.setInformativeText (tr ("Do you want to quit %1 now?").arg (qApp->applicationName()));
     msg.setStandardButtons (QMessageBox::Yes | QMessageBox::No);
 
-    if (msg.exec() == QMessageBox::Yes)
-    {
+    if (msg.exec() == QMessageBox::Yes) {
         openDownload();
         qApp->closeAllWindows();
     }
-
-    else
-    {
+    else {
         ui->openButton->setEnabled (true);
         ui->openButton->setVisible (true);
         ui->timeLabel->setText (tr ("Click the \"Open\" button to apply the update"));
@@ -111,7 +109,6 @@ void DownloadDialog::openDownload (void)
 
         if (url.startsWith ("/"))
             url = "file://" + url;
-
         else
             url = "file:///" + url;
 
@@ -151,7 +148,10 @@ void DownloadDialog::downloadFinished (void)
     if (!data.isEmpty())
     {
         QStringList list = m_reply->url().toString().split ("/");
-        QFile file (QDir::tempPath() + "/" + list.at (list.count() - 1));
+
+        QFile file (QFileDialog::getSaveFileName(this,
+                                                 tr("Save File"),
+                                                 QDir::homePath()+ "/" + list.at (list.count() - 1)));
         QMutex _mutex;
 
         if (file.open (QIODevice::WriteOnly))
@@ -163,7 +163,16 @@ void DownloadDialog::downloadFinished (void)
             _mutex.unlock();
         }
 
-        installUpdate();
+        QString url = file.fileName();
+
+        if (url.startsWith ("/"))
+            url = "file://" + url;
+        else
+            url = "file:///" + url;
+
+        QDesktopServices::openUrl(url);
+
+        qApp->closeAllWindows();
     }
 }
 
