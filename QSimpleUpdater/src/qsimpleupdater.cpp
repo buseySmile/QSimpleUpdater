@@ -400,15 +400,13 @@ void QSimpleUpdater::onCheckingFinished (void)
         if (_message.exec() == QMessageBox::Yes)
             downloadLatestVersion();
     }
-
     // Tell user that app is up-to-date (only if necessary)
     else if (!silent() && m_show_newest_version && !m_latest_version.isEmpty())
     {
         _message.setStandardButtons (QMessageBox::Ok);
-        _message.setText ("<b>" + tr ("You're up-to-date!") +
-                          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b>");
+        _message.setText ("<b>" + tr ("You're up-to-date!") + "</b>");
         _message.setInformativeText (
-            tr ("%1 %2 is currently the newest version available")
+            tr ("%1\nversion %2")
             .arg (qApp->applicationName())
             .arg (installedVersion()));
 
