@@ -1,5 +1,5 @@
 # Include the QSimpleUpdater files
-include($$PWD/../QSimpleUpdater/QSimpleUpdater.pri)
+include($$PWD/../QSimpleUpdater/qsimpleupdater.pri)
 
 # Include the QtWidgets module
 QT += widgets

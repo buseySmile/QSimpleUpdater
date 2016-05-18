@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="versionLabel">
      <property name="text">
-      <string>Set installed version (latest version is 1.0)</string>
+      <string>Set installed version</string>
      </property>
     </widget>
    </item>
