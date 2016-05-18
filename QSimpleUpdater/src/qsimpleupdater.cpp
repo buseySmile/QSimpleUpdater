@@ -490,7 +490,7 @@ void QSimpleUpdater::checkDownloadedVersion (QNetworkReply *reply)
 
     m_new_version_available = _new_update;
 
-    if (!m_changelog_url.isEmpty() && newerVersionAvailable())
+    if (!m_changelog_url.isEmpty()/* && newerVersionAvailable()*/)
     {
         disconnect(m_manager, SIGNAL (finished (QNetworkReply *)),
                    this,        SLOT (checkDownloadedVersion (QNetworkReply *)));
