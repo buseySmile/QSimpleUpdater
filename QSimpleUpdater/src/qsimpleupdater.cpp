@@ -95,13 +95,15 @@ QSimpleUpdater::QSimpleUpdater (QObject *parent)
     m_downloadDialog = new DownloadDialog();
 
     m_manager = new QNetworkAccessManager (this);
-    connect (m_manager, SIGNAL (finished (QNetworkReply *)), this,
-             SLOT (checkDownloadedVersion (QNetworkReply *)));
-    connect (m_manager, SIGNAL (sslErrors (QNetworkReply *, QList<QSslError>)),
-             this, SLOT (ignoreSslErrors (QNetworkReply *, QList<QSslError>)));
 
-    connect (m_progressDialog, SIGNAL (cancelClicked()), this, SLOT (cancel()));
-    connect (this, SIGNAL (checkingFinished()), this, SLOT (onCheckingFinished()));
+    connect (m_manager, SIGNAL (sslErrors (QNetworkReply *, QList<QSslError>)),
+             this,        SLOT (ignoreSslErrors (QNetworkReply *, QList<QSslError>)));
+
+    connect (m_progressDialog, SIGNAL (cancelClicked()),
+             this,               SLOT (cancel()));
+
+    connect (this, SIGNAL (checkingFinished()),
+             this,   SLOT (onCheckingFinished()));
 
     setApplicationVersion (qApp->applicationVersion());
 }
@@ -128,6 +130,9 @@ void QSimpleUpdater::checkForUpdates (void)
 {
     if (!m_reference_url.isEmpty())
     {
+        connect (m_manager, SIGNAL (finished (QNetworkReply *)),
+                 this,        SLOT (checkDownloadedVersion (QNetworkReply *)));
+
         m_manager->get (QNetworkRequest (m_reference_url));
 
         if (!silent())
@@ -372,7 +377,7 @@ void QSimpleUpdater::onCheckingFinished (void)
 
     // Get the application icon as a pixmap
     QPixmap _icon = qApp->windowIcon().pixmap (
-                        qApp->windowIcon().actualSize (QSize (96, 96)));
+                    qApp->windowIcon().actualSize (QSize (96, 96)));
 
     // If the icon is invalid, use default icon
     if (_icon.isNull())
@@ -381,7 +386,7 @@ void QSimpleUpdater::onCheckingFinished (void)
     QMessageBox _message;
     _message.setIconPixmap (_icon);
 
-    // Ask user if he/she wants to download newer version
+    // Ask user to download newer version
     if (newerVersionAvailable() && m_show_update_available)
     {
         _message.setDetailedText (changeLog());
@@ -396,7 +401,7 @@ void QSimpleUpdater::onCheckingFinished (void)
             downloadLatestVersion();
     }
 
-    // Tell user that he/she is up to date (only if necessary)
+    // Tell user that app is up-to-date (only if necessary)
     else if (!silent() && m_show_newest_version && !m_latest_version.isEmpty())
     {
         _message.setStandardButtons (QMessageBox::Ok);
@@ -427,61 +432,76 @@ void QSimpleUpdater::checkDownloadedVersion (QNetworkReply *reply)
 
     QString _reply = QString::fromUtf8 (reply->readAll());
     _reply.replace (" ", "");
-    _reply.replace ("\n", "");
 
     if (!_reply.isEmpty())
     {
-        m_latest_version = _reply;
+        QStringList version_full_info = _reply.split("\n");
 
-        QStringList _download = m_latest_version.split (".");
-        QStringList _installed = m_installed_version.split (".");
+        if(version_full_info.count() > 0) {
+            m_latest_version = version_full_info.at(0);
 
-        for (int i = 0; i <= _download.count() - 1; ++i)
-        {
-            if (_download.count() - 1 >= i && _installed.count() - 1 >= i)
+            QStringList _download = m_latest_version.split (".");
+            QStringList _installed = m_installed_version.split (".");
+
+            for (int i = 0; i <= _download.count() - 1; ++i)
             {
-                if (_download.at (i) > _installed.at (i))
+                if (_download.count() - 1 >= i && _installed.count() - 1 >= i)
                 {
-                    _new_update = true;
-                    break;
-                }
-            }
-
-            else
-            {
-                if (_installed.count() < _download.count())
-                {
-                    if (_installed.at (i - 1) == _download.at (i - 1))
-                        break;
-
-                    else
+                    if (_download.at (i) > _installed.at (i))
                     {
                         _new_update = true;
                         break;
                     }
                 }
+
+                else
+                {
+                    if (_installed.count() < _download.count())
+                    {
+                        if (_installed.at (i - 1) == _download.at (i - 1))
+                            break;
+
+                        else
+                        {
+                            _new_update = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else
+            showErrorMessage();
+
+        foreach (QString itLinkString, version_full_info) {
+            QStringList link = itLinkString.split("||");
+            if(link.size() < 2) continue;
+
+        #if defined(Q_OS_MAC)
+            if(link.contains("mac", Qt::CaseInsensitive)) {
+        #elif defined(Q_OS_LINUX)
+            if(link.contains("nix", Qt::CaseInsensitive)) {
+        #elif defined(Q_OS_WIN32)
+            if(link.contains("win", Qt::CaseInsensitive)) {
+        #endif
+                m_download_url.setUrl(link.at(1));
+                break;
             }
         }
     }
-
-    else
-        showErrorMessage();
 
     m_new_version_available = _new_update;
 
     if (!m_changelog_url.isEmpty() && newerVersionAvailable())
     {
-        QNetworkAccessManager *_manager = new QNetworkAccessManager (this);
+        disconnect(m_manager, SIGNAL (finished (QNetworkReply *)),
+                   this,        SLOT (checkDownloadedVersion (QNetworkReply *)));
 
-        connect (_manager, SIGNAL (finished (QNetworkReply *)), this,
-                 SLOT (processDownloadedChangelog (QNetworkReply *)));
+        connect (m_manager, SIGNAL (finished (QNetworkReply *)),
+                 this,        SLOT (processDownloadedChangelog (QNetworkReply *)));
 
-        connect (_manager, SIGNAL (sslErrors (QNetworkReply *, QList<QSslError>)),
-                 this, SLOT (ignoreSslErrors (QNetworkReply *, QList<QSslError>)));
-
-        _manager->get (QNetworkRequest (m_changelog_url));
+        m_manager->get(QNetworkRequest (m_changelog_url));
     }
-
     else
         emit checkingFinished();
 }
@@ -498,6 +518,12 @@ void QSimpleUpdater::processDownloadedChangelog (QNetworkReply *reply)
 
     if (!_reply.isEmpty())
         m_changelog = _reply;
+
+    disconnect(m_manager, SIGNAL (finished (QNetworkReply *)),
+               this,        SLOT (processDownloadedChangelog (QNetworkReply *)));
+
+    connect (m_manager, SIGNAL (finished (QNetworkReply *)),
+             this,        SLOT (checkDownloadedVersion (QNetworkReply *)));
 
     emit checkingFinished();
 }
