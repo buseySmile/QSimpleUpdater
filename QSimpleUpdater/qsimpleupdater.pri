@@ -26,10 +26,6 @@ unix:!android {
     LIBS += -lcrypto -lssl
 }
 
-win32* {
-    LIBS += -LC:/OpenSSL-Win32/lib -llibeay32
-}
-
 RESOURCES += $$PWD/res/qsu_resources.qrc
 
 FORMS += $$PWD/src/dialogs/download_dialog.ui \
