@@ -130,7 +130,11 @@ void DownloadDialog::onDownloadFinished (void)
             _mutex.unlock();
         }
 
+#if defined(Q_OS_MAC)
+        if(objc_execUpdater(QCoreApplication::applicationDirPath()))
+#elif defined(Q_OS_LINUX)
         if(execUpdater())
+#endif
             qApp->quit();
         else
             this->close();

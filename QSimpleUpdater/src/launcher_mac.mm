@@ -1,32 +1,38 @@
-#include "stdafx.h"
+//#include "stdafx.h"
+
+#include <Cocoa/Cocoa.h>
+#include <IOKit/IOKitLib.h>
+#include <QDebug>
 
 #include "launcher.h"
 
-BOOL _execUpdater() {
+BOOL _execUpdater(NSString *workingDir) {
     NSString *path = @"", *args = @"";
     @try {
         path = [[NSBundle mainBundle] bundlePath];
         if (!path) {
-            LOG(("Could not get bundle path!!"));
+            qDebug() << "Could not get bundle path!!";
             return NO;
         }
         path = [path stringByAppendingString:@"/Contents/Frameworks/updater"];
 
-        NSMutableArray *args = [[NSMutableArray alloc] initWithObjects:@"-workpath", QNSString(cWorkingDir()).s(), @"-procid", nil];
+        NSMutableArray *args = [[NSMutableArray alloc] initWithObjects:@"-workpath", workingDir, @"-procid", nil];
         [args addObject:[NSString stringWithFormat:@"%d", [[NSProcessInfo processInfo] processIdentifier]]];
 
-        if (cDebug())
-            [args addObject:@"-debug"];
-
-
-        DEBUG_LOG(("Application Info: executing %1 %2").arg(objcString(path)).arg(objcString([args componentsJoinedByString:@" "])));
+        qDebug() << QString("Application Info: executing %1 %2")
+                        .arg(QString::fromNSString(path))
+                        .arg(QString::fromNSString([args componentsJoinedByString:@" "]));
         if (![NSTask launchedTaskWithLaunchPath:path arguments:args]) {
-            LOG(("Task not launched while executing %1 %2").arg(objcString(path)).arg(objcString([args componentsJoinedByString:@" "])));
+            qDebug() << QString("Task not launched while executing %1 %2")
+                                .arg(QString::fromNSString(path))
+                                .arg(QString::fromNSString([args componentsJoinedByString:@" "]));
             return NO;
         }
     }
     @catch (NSException *exception) {
-        LOG(("Exception caught while executing %1 %2").arg(objcString(path)).arg(objcString(args)));
+        qDebug() << QString("Exception caught while executing %1 %2")
+                            .arg(QString::fromNSString(path))
+                            .arg(QString::fromNSString(args));
         return NO;
     }
     @finally {
@@ -34,6 +40,6 @@ BOOL _execUpdater() {
     return YES;
 }
 
-bool objc_execUpdater() {
-    return !!_execUpdater();
+bool objc_execUpdater(const QString& working_dir) {
+    return _execUpdater(working_dir.toNSString());
 }
