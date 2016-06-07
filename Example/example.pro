@@ -1,10 +1,10 @@
-# Include the QSimpleUpdater files
 include($$PWD/../QSimpleUpdater/qsimpleupdater.pri)
 
-# Include the QtWidgets module
-QT += widgets
+TEMPLATE = app
+TARGET = example
 
-# Define the source code
-FORMS += example.ui
+QT += core
+
 HEADERS += example.h
 SOURCES += example.cpp
+FORMS += example.ui

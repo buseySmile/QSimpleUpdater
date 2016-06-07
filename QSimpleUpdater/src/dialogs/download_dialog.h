@@ -24,8 +24,6 @@
 #include <QDesktopServices>
 #include <QNetworkAccessManager>
 
-#include <math.h>
-
 namespace Ui
 {
 class DownloadDialog;
@@ -42,12 +40,10 @@ class DownloadDialog : public QWidget
         void beginDownload (const QUrl& url);
 
     private slots:
-        void openDownload (void);
-        void installUpdate (void);
-        void cancelDownload (void);
-        void downloadFinished (void);
-        void updateProgress (qint64 received, qint64 total);
-        void ignoreSslErrors (QNetworkReply *reply, const QList<QSslError>& error);
+        void onCancelDownload(void);
+        void onDownloadFinished(void);
+        void onUpdateProgress(qint64 received, qint64 total);
+        void onIgnoreSslErrors(QNetworkReply *reply, const QList<QSslError>& error);
 
     private:
         Ui::DownloadDialog *ui;

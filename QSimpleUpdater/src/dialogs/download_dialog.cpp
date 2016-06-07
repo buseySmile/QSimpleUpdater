@@ -12,16 +12,17 @@
  * Lesser General Public License for more details.
  *
  */
+#include <QMutex>
+#include <QFileDialog>
+#include <math.h>
 
+#include "launcher.h"
 #include "download_dialog.h"
 #include "ui_download_dialog.h"
 
-#include <QMutex>
-#include <QFileDialog>
-
-DownloadDialog::DownloadDialog (QWidget *parent)
-    : QWidget (parent)
-    , ui (new Ui::DownloadDialog)
+DownloadDialog::DownloadDialog (QWidget *parent) :
+    QWidget(parent),
+    ui (new Ui::DownloadDialog)
 {
 
     // Setup the UI
@@ -34,19 +35,15 @@ DownloadDialog::DownloadDialog (QWidget *parent)
     setWindowFlags (Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
     // Connect SIGNALS/SLOTS
-    connect (ui->stopButton, SIGNAL (clicked()), this, SLOT (cancelDownload()));
-    connect (ui->openButton, SIGNAL (clicked()), this, SLOT (installUpdate()));
-
-    // Configure open button
-    ui->openButton->setEnabled (false);
-    ui->openButton->setVisible (false);
+    connect (ui->stopButton, SIGNAL (clicked()),
+             this,             SLOT (onCancelDownload()));
 
     // Initialize the network access manager
     m_manager = new QNetworkAccessManager (this);
 
     // Avoid SSL issues
-    connect (m_manager, SIGNAL (sslErrors (QNetworkReply *, QList<QSslError>)), this,
-             SLOT (ignoreSslErrors (QNetworkReply *, QList<QSslError>)));
+    connect (m_manager, SIGNAL (sslErrors (QNetworkReply *, QList<QSslError>)),
+             this,        SLOT (onIgnoreSslErrors (QNetworkReply *, QList<QSslError>)));
 }
 
 DownloadDialog::~DownloadDialog (void)
@@ -70,54 +67,17 @@ void DownloadDialog::beginDownload (const QUrl& url)
 
     // Update the progress bar value automatically
     connect (m_reply, SIGNAL (downloadProgress (qint64, qint64)),
-             this,      SLOT (updateProgress (qint64, qint64)));
+             this,      SLOT (onUpdateProgress (qint64, qint64)));
 
     // Write the file to the hard disk once the download is finished
     connect (m_reply, SIGNAL (finished()),
-             this,      SLOT (downloadFinished()));
+             this,      SLOT (onDownloadFinished()));
 
     // Show the dialog
     showNormal();
 }
 
-void DownloadDialog::installUpdate (void)
-{
-    QMessageBox msg;
-    msg.setIcon (QMessageBox::Question);
-    msg.setText ("<b>" +
-                 tr ("To apply the update(s), you must first quit %1")
-                 .arg (qApp->applicationName()) +
-                 "</b>");
-    msg.setInformativeText (tr ("Do you want to quit %1 now?").arg (qApp->applicationName()));
-    msg.setStandardButtons (QMessageBox::Yes | QMessageBox::No);
-
-    if (msg.exec() == QMessageBox::Yes) {
-        openDownload();
-        qApp->closeAllWindows();
-    }
-    else {
-        ui->openButton->setEnabled (true);
-        ui->openButton->setVisible (true);
-        ui->timeLabel->setText (tr ("Click the \"Open\" button to apply the update"));
-    }
-}
-
-void DownloadDialog::openDownload (void)
-{
-    if (!m_path.isEmpty())
-    {
-        QString url = m_path;
-
-        if (url.startsWith ("/"))
-            url = "file://" + url;
-        else
-            url = "file:///" + url;
-
-        QDesktopServices::openUrl (url);
-    }
-}
-
-void DownloadDialog::cancelDownload (void)
+void DownloadDialog::onCancelDownload (void)
 {
     if (!m_reply->isFinished())
     {
@@ -138,7 +98,7 @@ void DownloadDialog::cancelDownload (void)
         hide();
 }
 
-void DownloadDialog::downloadFinished (void)
+void DownloadDialog::onDownloadFinished (void)
 {
     ui->stopButton->setText (tr ("Close"));
     ui->downloadLabel->setText (tr ("Download complete!"));
@@ -150,9 +110,15 @@ void DownloadDialog::downloadFinished (void)
     {
         QStringList list = m_reply->url().toString().split ("/");
 
-        QFile file (QFileDialog::getSaveFileName(this,
-                                                 tr("Save File"),
-                                                 QDir::homePath()+ "/" + list.at (list.count() - 1)));
+//        QFile file (QFileDialog::getSaveFileName(this,
+//                                                 tr("Save File"),
+//                                                 QDir::homePath()+ "/" + list.at (list.count() - 1)));
+        QDir dir(QCoreApplication::applicationDirPath()+ "/updates/");
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+        QString new_file = QCoreApplication::applicationDirPath()+ "/updates/" + list.at (list.count() - 1);
+        QFile file(new_file);
         QMutex _mutex;
 
         if (file.open (QIODevice::WriteOnly))
@@ -164,20 +130,14 @@ void DownloadDialog::downloadFinished (void)
             _mutex.unlock();
         }
 
-        QString url = file.fileName();
-
-        if (url.startsWith ("/"))
-            url = "file://" + url;
+        if(execUpdater())
+            qApp->quit();
         else
-            url = "file:///" + url;
-
-        QDesktopServices::openUrl(url);
-
-        qApp->closeAllWindows();
+            this->close();
     }
 }
 
-void DownloadDialog::updateProgress (qint64 received, qint64 total)
+void DownloadDialog::onUpdateProgress (qint64 received, qint64 total)
 {
     // We know the size of the download, so we can calculate the progress....
     if (total > 0 && received > 0)
@@ -264,7 +224,7 @@ void DownloadDialog::updateProgress (qint64 received, qint64 total)
     }
 }
 
-void DownloadDialog::ignoreSslErrors (QNetworkReply *reply,
+void DownloadDialog::onIgnoreSslErrors (QNetworkReply *reply,
                                       const QList<QSslError>& error)
 {
 #ifndef Q_OS_IOS
