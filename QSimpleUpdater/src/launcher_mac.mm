@@ -1,5 +1,3 @@
-//#include "stdafx.h"
-
 #include <Cocoa/Cocoa.h>
 #include <IOKit/IOKitLib.h>
 #include <QDebug>
