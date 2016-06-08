@@ -4,7 +4,7 @@
 
 #include "launcher.h"
 
-BOOL _execUpdater(NSString *workingDir) {
+BOOL _execUpdater() {
     NSString *path = @"", *args = @"";
     @try {
         path = [[NSBundle mainBundle] bundlePath];
@@ -14,7 +14,7 @@ BOOL _execUpdater(NSString *workingDir) {
         }
         path = [path stringByAppendingString:@"/Contents/Frameworks/updater"];
 
-        NSMutableArray *args = [[NSMutableArray alloc] initWithObjects:@"-workpath", workingDir, @"-procid", nil];
+        NSMutableArray *args = [[NSMutableArray alloc] initWithObjects:/*@"-workpath", workingDir,*/ @"-procid", nil];
         [args addObject:[NSString stringWithFormat:@"%d", [[NSProcessInfo processInfo] processIdentifier]]];
 
         qDebug() << QString("Application Info: executing %1 %2")
@@ -39,5 +39,7 @@ BOOL _execUpdater(NSString *workingDir) {
 }
 
 bool objc_execUpdater(const QString& working_dir) {
-    return _execUpdater(working_dir.toNSString());
+    // Q_UNUSED(working_dir)
+    qDebug() << "Workin dir" << working_dir;
+    return _execUpdater(/*working_dir.toNSString()*/);
 }

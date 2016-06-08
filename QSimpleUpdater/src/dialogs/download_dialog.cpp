@@ -121,6 +121,7 @@ void DownloadDialog::onDownloadFinished (void)
         QFile file(new_file);
         QMutex _mutex;
 
+        // TODO: add file creating result check
         if (file.open (QIODevice::WriteOnly))
         {
             _mutex.lock();

@@ -15,7 +15,7 @@ HEADERS += \
 #        $$PWD/src/launcher_win.cpp
 #}
 macx {
-    LIBS += -framework CoreFoundation -framework IOKit -framework AppKit
+    LIBS += -framework CoreFoundation -framework Cocoa -framework IOKit -framework AppKit
     OBJECTIVE_SOURCES +=  \
         $$PWD/src/launcher_mac.mm
 }
