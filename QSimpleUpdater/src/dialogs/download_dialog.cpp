@@ -12,6 +12,7 @@
  * Lesser General Public License for more details.
  *
  */
+
 #include <QMutex>
 #include <QFileDialog>
 #include <math.h>
@@ -100,35 +101,59 @@ void DownloadDialog::onCancelDownload (void)
 
 void DownloadDialog::onDownloadFinished (void)
 {
-    ui->stopButton->setText (tr ("Close"));
-    ui->downloadLabel->setText (tr ("Download complete!"));
-    ui->timeLabel->setText (tr ("The installer will open in a separate window..."));
+    ui->stopButton->setText(tr("Close"));
+    ui->downloadLabel->setText(tr("Download complete!"));
 
     QByteArray data = m_reply->readAll();
 
     if (!data.isEmpty())
     {
+        ui->timeLabel->setText(tr("The installer will open separately"));
         QStringList list = m_reply->url().toString().split ("/");
 
-//        QFile file (QFileDialog::getSaveFileName(this,
-//                                                 tr("Save File"),
-//                                                 QDir::homePath()+ "/" + list.at (list.count() - 1)));
         QDir dir(QCoreApplication::applicationDirPath()+ "/updates/");
         if (!dir.exists()) {
-            dir.mkpath(".");
+            if(!dir.mkpath(".")) {
+                QMessageBox::warning(this, tr("Updater error")
+                                         , tr("Update directory creation was unsuccessful \n ")
+                                            + dir.path() + "\n"
+                                            + tr("Check write access or user priveleges")
+                                         , QMessageBox::Abort
+                                         , QMessageBox::NoButton
+                                         , QMessageBox::NoButton);
+                this->close();
+            }
         }
         QString new_file = QCoreApplication::applicationDirPath()+ "/updates/" + list.at (list.count() - 1);
         QFile file(new_file);
         QMutex _mutex;
 
         // TODO: add file creating result check
-        if (file.open (QIODevice::WriteOnly))
+        if (file.open(QIODevice::WriteOnly))
         {
             _mutex.lock();
-            file.write (data);
+            if(file.write(data) == -1) {
+                QMessageBox::warning(this, tr("Updater error")
+                                         , tr("Update file creation was unsuccessful \n ")
+                                            + new_file + "\n"
+                                            + tr("Check write access or user priveleges")
+                                         , QMessageBox::Abort
+                                         , QMessageBox::NoButton
+                                         , QMessageBox::NoButton);
+                this->close();
+            }
             m_path = file.fileName();
             file.close();
             _mutex.unlock();
+        } else {
+            QMessageBox::warning(this, tr("Updater error")
+                                     , tr("Update file creation was unsuccessful \n ")
+                                        + new_file + "\n"
+                                        + tr("Check write access or user priveleges")
+                                     , QMessageBox::Abort
+                                     , QMessageBox::NoButton
+                                     , QMessageBox::NoButton);
+            this->close();
         }
 
 #if defined(Q_OS_MAC)
@@ -137,9 +162,18 @@ void DownloadDialog::onDownloadFinished (void)
         if(execUpdater())
 #endif
             qApp->quit();
-        else
+        else {
+            QMessageBox::warning(this, tr("Updater error")
+                                     , tr("Can't find updater module' \n ")
+                                        + tr("Try to reinstall program")
+                                     , QMessageBox::Abort
+                                     , QMessageBox::NoButton
+                                     , QMessageBox::NoButton);
             this->close();
+        }
     }
+    else
+        ui->timeLabel->setText(tr("ERROR! Data is empty!"));
 }
 
 void DownloadDialog::onUpdateProgress (qint64 received, qint64 total)
