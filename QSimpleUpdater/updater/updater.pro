@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = updater
 
-QT += core
+QT += core gui widgets
 CONFIG -= app_bundle
 
 #DEFINES += _DEBUG

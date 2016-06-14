@@ -121,7 +121,8 @@ void DownloadDialog::onDownloadFinished (void)
                                          , QMessageBox::Abort
                                          , QMessageBox::NoButton
                                          , QMessageBox::NoButton);
-                this->close();
+                ui->timeLabel->setText(tr("ERROR! Update directory creation was unsuccessful!"));
+                return;
             }
         }
         QString new_file = QCoreApplication::applicationDirPath()+ "/updates/" + list.at (list.count() - 1);
@@ -140,7 +141,8 @@ void DownloadDialog::onDownloadFinished (void)
                                          , QMessageBox::Abort
                                          , QMessageBox::NoButton
                                          , QMessageBox::NoButton);
-                this->close();
+                ui->timeLabel->setText(tr("ERROR! Update file creation was unsuccessful!"));
+                return;
             }
             m_path = file.fileName();
             file.close();
@@ -153,7 +155,8 @@ void DownloadDialog::onDownloadFinished (void)
                                      , QMessageBox::Abort
                                      , QMessageBox::NoButton
                                      , QMessageBox::NoButton);
-            this->close();
+            ui->timeLabel->setText(tr("ERROR! Update file creation was unsuccessful!"));
+            return;
         }
 
 #if defined(Q_OS_MAC)
@@ -169,7 +172,8 @@ void DownloadDialog::onDownloadFinished (void)
                                      , QMessageBox::Abort
                                      , QMessageBox::NoButton
                                      , QMessageBox::NoButton);
-            this->close();
+            ui->timeLabel->setText(tr("ERROR! Can't find updater module!"));
+            return;
         }
     }
     else
