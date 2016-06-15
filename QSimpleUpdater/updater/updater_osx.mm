@@ -1,5 +1,8 @@
 #import <Cocoa/Cocoa.h>
-#include <QDebug>
+#include <QMessageBox>
+#include <QApplication>
+#include <QTextBrowser>
+//#include <QDebug>
 
 NSString *bandleName = nil;
 NSString *appDirFull = nil;
@@ -10,29 +13,53 @@ BOOL g_debug = YES;
 BOOL g_debug = NO;
 #endif
 
-void writeLog(NSString *msg)
+QString writeLog(NSString *msg)
 {
-    if(g_debug)
-       qDebug() << QString::fromNSString(msg);
+    return QString::fromNSString(msg);
+}
+//void writeLog(NSString *msg)
+//{
+//    if(g_debug)
+//        qDebug() << QString::fromNSString(msg);
+//}
+
+QMessageBox::StandardButton finishMsg(bool result) {
+    return QMessageBox::information(0,
+                                     QString::fromUtf8("Updater"),
+                                     result?(QString::fromUtf8("Обновление успешно")):(QString::fromUtf8("Обновление не удалось")));
 }
 
 void delFolder() {
-    writeLog([@"Fully clearing updates: " stringByAppendingString:[appDirFull stringByAppendingString:@"updates"]]);
+    //writeLog([@"Fully clearing updates: " stringByAppendingString:[appDirFull stringByAppendingString:@"updates"]]);
     if (![[NSFileManager defaultManager] removeItemAtPath:[appDirFull stringByAppendingString:@"updates"] error:nil]) {
-        writeLog(@"Error: failed to clear new path! :(");
+        //writeLog(@"Error: failed to clear new path! :(");
     }
     rmdir([[appDirFull stringByAppendingString:@"updates/"] fileSystemRepresentation]);
 }
 
-int main(int argc, const char * argv[]) {
+int main(int argc, char * argv[]) {
+    QApplication app(argc, argv);
+
+    QTextBrowser *log = new QTextBrowser();
+    log->setFixedWidth(900);
+    log->setFixedHeight(400);
+    log->show();
     // get the bandle path
     NSString *path = [[NSBundle mainBundle] bundlePath];
     if (!path) {
+        if(finishMsg(false) == QMessageBox::Yes) {
+            log->close();
+            delete log;
+        }
         return -1;
     }
     // search index till ".app/" inclusion backward
     NSRange range = [path rangeOfString:@".app/" options:NSBackwardsSearch];
     if (range.location == NSNotFound) {
+        if(finishMsg(false) == QMessageBox::Yes) {
+            log->close();
+            delete log;
+        }
         return -1;
     }
     // cut out path after ".app/"
@@ -67,7 +94,7 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < argc; ++i) {
         [argsArr addObject:[NSString stringWithUTF8String:argv[i]]];
     }
-    writeLog([[NSArray arrayWithObjects:@"Arguments: '", [argsArr componentsJoinedByString:@"' '"], @"'..", nil] componentsJoinedByString:@""]);
+    log->append(writeLog([[NSArray arrayWithObjects:@"Arguments: '", [argsArr componentsJoinedByString:@"' '"], @"'..", nil] componentsJoinedByString:@""]));
 
     // finding main app procId...
     if (procId) {
@@ -91,13 +118,17 @@ int main(int argc, const char * argv[]) {
         NSString *updDir = [appDirFull stringByAppendingString:@"updates/"];
 
         if ([fileManager fileExistsAtPath:[updDir stringByAppendingString:appName]]) {
-            writeLog([@"Ready file found! Using udates from " stringByAppendingString: updDir]);
+            log->append(writeLog([@"Ready file found! Using updates from " stringByAppendingString: updDir]));
         } else {
-            writeLog(@"Ready file not found! EXIT!");
+            log->append(writeLog(@"Ready file not found! EXIT!"));
+            if(finishMsg(false) == QMessageBox::Yes) {
+                log->close();
+                delete log;
+            }
             return -1;
         }
 
-        writeLog([@"Starting update files from path: " stringByAppendingString: updDir]);
+        log->append(writeLog([@"Starting update files from path: " stringByAppendingString: updDir]));
 
         NSArray *keys = [NSArray arrayWithObject:NSURLIsDirectoryKey];
         NSDirectoryEnumerator *enumerator = [fileManager
@@ -105,52 +136,52 @@ int main(int argc, const char * argv[]) {
                                             includingPropertiesForKeys:keys
                                             options:0
                                             errorHandler:^(NSURL *url, NSError *error) {
-                                            writeLog([[[@"Error in enumerating " stringByAppendingString:[url absoluteString]] stringByAppendingString: @" error is: "] stringByAppendingString: [error description]]);
+                                            log->append(writeLog([[[@"Error in enumerating " stringByAppendingString:[url absoluteString]] stringByAppendingString: @" error is: "] stringByAppendingString: [error description]]));
                                     return NO;
                                 }];
         for (NSURL *url in enumerator)
         {
             NSString *srcPath = [url path];
-            writeLog([@"Handling file " stringByAppendingString:srcPath]);
+            log->append(writeLog([@"Handling file " stringByAppendingString:srcPath]));
             NSRange r = [srcPath rangeOfString:updDir];
             if (r.location != 0) {
-                writeLog([@"Bad file found, no base path " stringByAppendingString:srcPath]);
+                log->append(writeLog([@"Bad file found, no base path " stringByAppendingString:srcPath]));
                 delFolder();
                 break;
             }
             NSString *pathPart = [srcPath substringFromIndex:r.length];
-            writeLog([@"    an app file:  " stringByAppendingString:pathPart]);
+            log->append(writeLog([@"    an app file:  " stringByAppendingString:pathPart]));
             r = [pathPart rangeOfString:appName];
             if (r.location != 0) {
-                writeLog([@"Skipping not app file " stringByAppendingString:srcPath]);
+                log->append(writeLog([@"Skipping not app file " stringByAppendingString:srcPath]));
                 continue;
             }
             NSString *dstPath = [appDirFull stringByAppendingString:pathPart];
             NSError *error;
             NSNumber *isDirectory = nil;
             if (![url getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:&error]) {
-                writeLog([@"Failed to get IsDirectory for file " stringByAppendingString:[url path]]);
+                log->append(writeLog([@"Failed to get IsDirectory for file " stringByAppendingString:[url path]]));
                 delFolder();
                 break;
             }
             if ([isDirectory boolValue]) {
-                writeLog([[NSArray arrayWithObjects: @"Copying dir ", srcPath, @" to ", dstPath, nil] componentsJoinedByString:@""]);
+                log->append(writeLog([[NSArray arrayWithObjects: @"Copying dir ", srcPath, @" to ", dstPath, nil] componentsJoinedByString:@""]));
                 if (![fileManager createDirectoryAtPath:dstPath withIntermediateDirectories:YES attributes:nil error:nil]) {
-                    writeLog([@"Failed to force path for directory " stringByAppendingString:dstPath]);
+                    log->append(writeLog([@"Failed to force path for directory " stringByAppendingString:dstPath]));
                     delFolder();
                     break;
                 }
             } else if ([fileManager fileExistsAtPath:dstPath]) {
-                writeLog([@"Editing file " stringByAppendingString:dstPath]);
+                log->append(writeLog([@"Editing file " stringByAppendingString:dstPath]));
                 if (![[NSData dataWithContentsOfFile:srcPath] writeToFile:dstPath atomically:YES]) {
-                    writeLog([@"Failed to edit file " stringByAppendingString:dstPath]);
+                    log->append(writeLog([@"Failed to edit file " stringByAppendingString:dstPath]));
                     delFolder();
                     break;
                 }
             } else {
-                writeLog([[NSArray arrayWithObjects: @"Copying file ", srcPath, @" to ", dstPath, nil] componentsJoinedByString:@""]);
+                log->append(writeLog([[NSArray arrayWithObjects: @"Copying file ", srcPath, @" to ", dstPath, nil] componentsJoinedByString:@""]));
                 if (![fileManager copyItemAtPath:srcPath toPath:dstPath error:nil]) {
-                    writeLog([@"Failed to copy file to " stringByAppendingString:dstPath]);
+                    log->append(writeLog([@"Failed to copy file to " stringByAppendingString:dstPath]));
                     delFolder();
                     break;
                 }
@@ -163,7 +194,7 @@ int main(int argc, const char * argv[]) {
 NSString *appPath = [[NSArray arrayWithObjects:appDirFull, appName, nil] componentsJoinedByString:@""];
 NSMutableArray *args = [[NSMutableArray alloc] initWithObjects:@"-debug", nil];
 
-writeLog([@"Running application '" stringByAppendingString:appPath]);
+log->append(writeLog([@"Running application '" stringByAppendingString:appPath]));
 //writeLog([[NSArray arrayWithObjects:@"Running application '", appPath, @"'with args '", [args componentsJoinedByString:@"' '"], @"'..'",nil] componentsJoinedByString:@""]);
 
 NSError *error = nil;
@@ -175,7 +206,12 @@ NSRunningApplication *result = [[NSWorkspace sharedWorkspace]
                                forKey:NSWorkspaceLaunchConfigurationArguments]
                 error:&error];
 if (!result)
-    writeLog([@"Could not run application, error: " stringByAppendingString:error ? [error localizedDescription] : @"(nil)"]);
+    log->append(writeLog([@"Could not run application, error: " stringByAppendingString:error ? [error localizedDescription] : @"(nil)"]));
 
-return result ? 0 : -1;
+    if(finishMsg(result) == QMessageBox::Yes) {
+        log->close();
+        delete log;
+    }
+
+    return result ? 0 : -1;
 }
