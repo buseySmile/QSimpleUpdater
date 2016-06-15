@@ -3,11 +3,11 @@
 NSString *bandleName = nil;
 NSString *appDirFull = nil;
 
-//#ifdef _DEBUG
+#ifdef _DEBUG
 BOOL g_debug = YES;
-//#else
-//BOOL g_debug = NO;
-//#endif
+#else
+BOOL g_debug = NO;
+#endif
 
 NSFileHandle *_logFile = nil;
 void openLog() {
