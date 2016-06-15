@@ -30,3 +30,8 @@ Makefile*
 *.exe
 *.out
 *.app
+
+# macx
+.DS_Store
+project.xcworkspace
+xcuserdata

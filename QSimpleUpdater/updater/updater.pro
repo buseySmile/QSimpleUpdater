@@ -1,10 +1,10 @@
 TEMPLATE = app
 TARGET = updater
 
-QT += core gui widgets
+CONFIG -= qt
 CONFIG -= app_bundle
 
-#DEFINES += _DEBUG
+DEFINES += _DEBUG
 
 win32 {
     HEADERS += updater.h
@@ -12,8 +12,11 @@ win32 {
 }
 
 macx {
-    OBJECTIVE_SOURCES += updater_osx.mm
+    OBJECTIVE_SOURCES += updater_osx.m
     LIBS += -framework Cocoa
+#    LIBS += -framework CoreFoundation
+#    LIBS += -framework IOKit
+#    LIBS += -framework AppKit
 }
 
 unix:!macx {
