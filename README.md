@@ -13,7 +13,7 @@ __update loader______|______file updater__
 
 QSimpleUpdater is **free and open source [LGPL software](https://www.gnu.org/licenses/lgpl.html)**, which means that you can use it for both open source and proprietary applications.
 
-## How to use
+## Quick start
 
 * Copy/create submodule of *QSimpleUpdater* in your "3rd-party" project folder.
 ```bash
@@ -25,7 +25,9 @@ $ git submodule update
 ```
 include($$PWD/third-party/QSimpleUpdater/qsimpleupdater.pri)
 ```
-* Check the example project for details.
+* Check the example project and taste how it works.
+
+Detail description about integration QSimpleUpdater module and file updater tool into your system and platform you could find in **[Wiki](https://github.com/pixraider/QSimpleUpdater/wiki)**
 
 ## Organize remote hosting with updates
 
