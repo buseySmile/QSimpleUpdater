@@ -17,7 +17,7 @@
 #include <QFileDialog>
 #include <math.h>
 
-#include "launcher.h"
+#include "launcher/launcher.h"
 #include "download_dialog.h"
 #include "ui_download_dialog.h"
 

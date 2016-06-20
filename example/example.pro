@@ -1,4 +1,4 @@
-include($$PWD/../QSimpleUpdater/qsimpleupdater.pri)
+include($$PWD/../qsimpleupdater.pri)
 
 TEMPLATE = app
 TARGET = example

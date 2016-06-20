@@ -3,25 +3,24 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 QT += network
 
-#unix:!android {
-#    LIBS += -lcrypto -lssl
-#}
-
 HEADERS += \
-    $$PWD/src/launcher.h
+    $$PWD/src/launcher/launcher.h
 
 #win32 {
 #    SOURCES +=  \
-#        $$PWD/src/launcher_win.cpp
+#        $$PWD/src/launcher/launcher_win.cpp
 #}
 macx {
-    LIBS += -framework CoreFoundation -framework Cocoa -framework IOKit -framework AppKit
+    LIBS += -framework CoreFoundation
+    LIBS += -framework Cocoa
+    LIBS += -framework IOKit
+    LIBS += -framework AppKit
     OBJECTIVE_SOURCES +=  \
-        $$PWD/src/launcher_mac.mm
+        $$PWD/src/launcher/launcher_mac.mm
 }
 unix:!macx {    # other *nix
     SOURCES +=  \
-        $$PWD/src/launcher_nix.cpp
+        $$PWD/src/launcher/launcher_nix.cpp
 }
 
 INCLUDEPATH += $$PWD/src
