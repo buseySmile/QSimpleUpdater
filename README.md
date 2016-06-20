@@ -1,5 +1,7 @@
 ## QSimpleUpdater
 
+[![Build status](https://travis-ci.org/pixraider/QSimpleUpdater.svg?branch=master)](https://travis-ci.org/pixraider/QSimpleUpdater)
+
 QSimpleUpdater is an implementation of an auto-updating system to be used with Qt projects. It can check updates silent or not, get changelog, download updates to ```[app_dir_path]/updates``` and start external file update tool.
 
 File update tool you can find [here](https://github.com/pixraider/QSimpleUpdater/tree/master/QSimpleUpdater/updater) or realise by yourself.
