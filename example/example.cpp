@@ -65,11 +65,11 @@ void Example::checkForUpdates()
     // Tell the updater where we should download the changelog, note that
     // the changelog can be any file you want,
     // such as an HTML page or (as in this example), a text file
-    updater->setChangelogUrl("https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/Example/remote_hosting/CHANGELOG");
+    updater->setChangelogUrl("https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/example/remote_hosting/CHANGELOG");
 
     // Tell the updater where we can find the file that tells us the latest version
     // of the application
-    updater->setReferenceUrl("https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/Example/remote_hosting/CURRENT_VERSION");
+    updater->setReferenceUrl("https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/example/remote_hosting/CURRENT_VERSION");
 
     // Show the progress dialog and show messages when checking is finished
     updater->setSilent(false);

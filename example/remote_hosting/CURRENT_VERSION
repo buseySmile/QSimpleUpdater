@@ -1,4 +1,4 @@
 0.0.2
 win || http://[your_hosting_address]/win/example.zip
-mac || https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/Example/remote_hosting/mac/example
-nix || https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/Example/remote_hosting/nix/example
+mac || https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/example/remote_hosting/mac/example
+nix || https://raw.githubusercontent.com/pixraider/QSimpleUpdater/master/example/remote_hosting/nix/example
