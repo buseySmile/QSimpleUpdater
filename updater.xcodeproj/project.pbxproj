@@ -65,9 +65,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		07084677195445A600B5AE3A /* updater.temp_caseinsensitive_rename */ = {
+		07084677195445A600B5AE3A /* updater */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 07084681195445A600B5AE3A /* Build configuration list for PBXNativeTarget "updater.temp_caseinsensitive_rename" */;
+			buildConfigurationList = 07084681195445A600B5AE3A /* Build configuration list for PBXNativeTarget "updater" */;
 			buildPhases = (
 				07084674195445A600B5AE3A /* Sources */,
 				07084675195445A600B5AE3A /* Frameworks */,
@@ -77,8 +77,8 @@
 			);
 			dependencies = (
 			);
-			name = updater.temp_caseinsensitive_rename;
-			productName = Updater;
+			name = updater;
+			productName = updater;
 			productReference = 07084678195445A600B5AE3A /* updater */;
 			productType = "com.apple.product-type.tool";
 		};
@@ -102,7 +102,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				07084677195445A600B5AE3A /* updater.temp_caseinsensitive_rename */,
+				07084677195445A600B5AE3A /* updater */,
 			);
 		};
 /* End PBXProject section */
@@ -136,7 +136,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/tamtam.app/Contents/Frameworks";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/example.app/Contents/Frameworks";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -180,7 +180,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/tamtam.app/Contents/Frameworks";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/example.app/Contents/Frameworks";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -204,7 +204,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				PRODUCT_NAME = updater;
-				SYMROOT = ../../Updater/mac;
+				SYMROOT = ../Updater/mac;
 			};
 			name = Debug;
 		};
@@ -213,7 +213,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
 				PRODUCT_NAME = updater;
-				SYMROOT = ../../Updater/mac;
+				SYMROOT = ../Updater/mac;
 			};
 			name = Release;
 		};
@@ -229,7 +229,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		07084681195445A600B5AE3A /* Build configuration list for PBXNativeTarget "updater.temp_caseinsensitive_rename" */ = {
+		07084681195445A600B5AE3A /* Build configuration list for PBXNativeTarget "updater" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				07084682195445A600B5AE3A /* Debug */,
