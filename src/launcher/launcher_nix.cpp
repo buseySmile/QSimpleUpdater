@@ -5,7 +5,7 @@
 
 #include "launcher.h"
 
-bool execUpdater()
+bool linux_execUpdater()
 {
     if(!QFile::exists(QCoreApplication::applicationDirPath() + "/updater"))
         return false;

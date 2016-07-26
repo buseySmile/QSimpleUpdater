@@ -6,10 +6,10 @@ QT += network
 HEADERS += \
     $$PWD/src/launcher/launcher.h
 
-#win32 {
-#    SOURCES +=  \
-#        $$PWD/src/launcher/launcher_win.cpp
-#}
+win32 {
+    SOURCES +=  \
+        $$PWD/src/launcher/launcher_win.cpp
+}
 macx {
     LIBS += -framework CoreFoundation
     LIBS += -framework Cocoa

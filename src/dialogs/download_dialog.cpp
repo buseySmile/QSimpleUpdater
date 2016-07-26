@@ -162,7 +162,9 @@ void DownloadDialog::onDownloadFinished (void)
 #if defined(Q_OS_MAC)
         if(objc_execUpdater(QCoreApplication::applicationDirPath()))
 #elif defined(Q_OS_LINUX)
-        if(execUpdater())
+        if(linux_execUpdater())
+#elif defined(Q_OS_WIN32)
+        if(win_execUpdater())
 #endif
             qApp->quit();
         else {
