@@ -13,20 +13,17 @@
  *
  */
 
-#ifndef DOWNLOAD_DIALOG_H
-#define DOWNLOAD_DIALOG_H
+#ifndef DOWNLOADDIALOG_H
+#define DOWNLOADDIALOG_H
 
-#include <QDir>
-#include <QIcon>
-#include <QDateTime>
-#include <QMessageBox>
-#include <QNetworkReply>
-#include <QDesktopServices>
-#include <QNetworkAccessManager>
+#include <QWidget>
 
-namespace Ui
-{
-class DownloadDialog;
+class QSslError;
+class QNetworkReply;
+class QNetworkAccessManager;
+
+namespace Ui {
+    class DownloadDialog;
 }
 
 class DownloadDialog : public QWidget
@@ -59,4 +56,4 @@ class DownloadDialog : public QWidget
         float roundNumber (const float& input);
 };
 
-#endif
+#endif  // DOWNLOADDIALOG_H

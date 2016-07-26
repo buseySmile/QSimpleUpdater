@@ -1,4 +1,4 @@
-#include <QSimpleUpdater>
+#include "qsimpleupdater.h"
 
 #include "example.h"
 #include "ui_example.h"

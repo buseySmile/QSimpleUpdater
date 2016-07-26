@@ -13,9 +13,14 @@
  *
  */
 
-#include <QMutex>
-#include <QFileDialog>
 #include <math.h>
+#include <QMutex>
+#include <QDateTime>
+#include <QMessageBox>
+#include <QIcon>
+#include <QDir>
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
 
 #include "launcher/launcher.h"
 #include "download_dialog.h"

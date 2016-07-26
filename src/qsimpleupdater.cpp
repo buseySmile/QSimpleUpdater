@@ -59,24 +59,17 @@
  *
  * The libraries required by QSimpleUpdater are the same as Linux, however, these libraries
  * are installed by default in most Mac OS X installations.
- *
- * \bold {Microsoft Windows}
- *
- * QSimpleUpdater makes use of the OpenSSL-Win32 project, make sure that have it installed
- * and that the project knows where to find them (the default location is C:/OpenSSL-Win32).
- * Finally, deploy the following libraries with your compiled project:
- *
- * \list
- * \o libeay32.dll
- * \o ssleay32.dll
- * \endlist
  */
 
-/*! \fn QSimpleUpdater::checkingFinished (void)
- * This signal is triggered when the updater system finishes downloading
- * and proccessing the version data and changelog data.
- */
+#include <QApplication>
+#include <QDesktopServices>
+#include <QIcon>
+#include <QMessageBox>
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
 
+#include "dialogs/download_dialog.h"
+#include "dialogs/progress_dialog.h"
 #include "qsimpleupdater.h"
 
 /*! \internal
@@ -94,7 +87,7 @@ QSimpleUpdater::QSimpleUpdater (QObject *parent)
     m_progressDialog = new ProgressDialog();
     m_downloadDialog = new DownloadDialog();
 
-    m_manager = new QNetworkAccessManager (this);
+    m_manager = new QNetworkAccessManager(this);
 
     connect (m_manager, SIGNAL (sslErrors (QNetworkReply *, QList<QSslError>)),
              this,        SLOT (ignoreSslErrors (QNetworkReply *, QList<QSslError>)));
@@ -106,6 +99,13 @@ QSimpleUpdater::QSimpleUpdater (QObject *parent)
              this,   SLOT (onCheckingFinished()));
 
     setApplicationVersion (qApp->applicationVersion());
+}
+
+QSimpleUpdater::~QSimpleUpdater()
+{
+    delete m_downloadDialog;
+    delete m_progressDialog;
+    delete m_manager;
 }
 
 /*!
@@ -128,8 +128,7 @@ QString QSimpleUpdater::changeLog() const
 
 void QSimpleUpdater::checkForUpdates (void)
 {
-    if (!m_reference_url.isEmpty())
-    {
+    if (!m_reference_url.isEmpty()) {
         connect (m_manager, SIGNAL (finished (QNetworkReply *)),
                  this,        SLOT (checkDownloadedVersion (QNetworkReply *)));
 
@@ -137,9 +136,7 @@ void QSimpleUpdater::checkForUpdates (void)
 
         if (!silent())
             m_progressDialog->show();
-    }
-
-    else
+    } else
         qDebug() << "QSimpleUpdater: Invalid reference URL";
 }
 

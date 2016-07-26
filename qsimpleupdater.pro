@@ -1,14 +1,15 @@
 TEMPLATE = lib
 TARGET = qsimpleupdater
-VERSION = 0.7.0
+VERSION = 0.7.1
 
 ### qsimpleupdater
 include($$PWD/qsimpleupdater.pri)
 
-OBJECTS_DIR = _build/obj
-MOC_DIR = _build/moc
-RCC_DIR = _build/res
-UI_DIR = _build/ui
+OBJECTS_DIR = $$OUT_PWD/_build/obj
+MOC_DIR     = $$OUT_PWD/_build/moc
+RCC_DIR     = $$OUT_PWD/_build/rcc
+UI_DIR      = $$OUT_PWD/_build/ui
+
 win32 {
-    DESTDIR = $$OUT_PWD
+    DESTDIR = $$OUT_PWD/_build
 }

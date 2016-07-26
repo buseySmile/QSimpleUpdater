@@ -35,3 +35,6 @@ Makefile*
 .DS_Store
 project.xcworkspace
 xcuserdata
+
+# win 
+qsimpleupdater_resource.rc
