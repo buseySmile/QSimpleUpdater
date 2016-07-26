@@ -3,7 +3,8 @@
 
 #include <QDialog>
 #include <QMessageBox>
-#include <QSimpleUpdater>
+
+class QSimpleUpdater;
 
 namespace Ui
 {

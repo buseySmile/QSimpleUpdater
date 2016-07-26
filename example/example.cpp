@@ -1,3 +1,5 @@
+#include <QSimpleUpdater>
+
 #include "example.h"
 #include "ui_example.h"
 
