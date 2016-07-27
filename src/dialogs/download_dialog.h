@@ -28,32 +28,31 @@ namespace Ui {
 
 class DownloadDialog : public QWidget
 {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        explicit DownloadDialog (QWidget *parent = 0);
-        ~DownloadDialog (void);
+public:
+    explicit DownloadDialog(QWidget *parent = 0);
+    ~DownloadDialog();
 
-        void beginDownload (const QUrl& url);
+    void beginDownload(const QUrl& url);
 
-    private slots:
-        void onCancelDownload(void);
-        void onDownloadFinished(void);
-        void onUpdateProgress(qint64 received, qint64 total);
-        void onIgnoreSslErrors(QNetworkReply *reply, const QList<QSslError>& error);
+signals:
+    void cancelDownload();
 
-    private:
-        Ui::DownloadDialog *ui;
+private slots:
+    void onCancelDownload();
+    void onDownloadFinished(QNetworkReply* pReply);
+    void onDownloadProgress(qint64 received, qint64 total);
+    void onIgnoreSslErrors(QNetworkReply *reply, const QList<QSslError>& error);
 
-        QString m_path;
-        bool m_download_paused;
+private:
+    Ui::DownloadDialog *ui;
 
-        QNetworkReply *m_reply;
-        QNetworkAccessManager *m_manager;
+    bool isDownloadFinished;
+    QNetworkAccessManager *m_manager;
 
-        uint m_start_time;
-
-        float roundNumber (const float& input);
+    uint m_start_time;
+    float roundNumber(const float& input);
 };
 
 #endif  // DOWNLOADDIALOG_H
