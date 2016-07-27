@@ -8,7 +8,7 @@ int main (int argc, char *argv[])
     QApplication app (argc, argv);
 
     QCoreApplication::setApplicationName("QSimpleUpdater Example");
-    QCoreApplication::setApplicationVersion("0.0.1");
+    QCoreApplication::setApplicationVersion(QString(EXAMPLE_VERSION));
 
     // Create the dialog and show it
     Example example;
@@ -59,7 +59,6 @@ void Example::checkForUpdates()
     // application version in the updater too
     if (!ui->versionLineEdit->text().isEmpty())
         updater->setApplicationVersion(ui->versionLineEdit->text());
-
     // If the versionLineEdit is empty, then set the application version from QCoreApplication
     else
         updater->setApplicationVersion(QCoreApplication::applicationVersion());
