@@ -4,7 +4,7 @@
 
 QSimpleUpdater is an implementation of an auto-updating system to be used with Qt projects. It can check updates silent or not, get changelog, download updates to ```[app_dir_path]/updates``` and start external file update tool.
 
-File update tool you can find [here](https://github.com/pixraider/QSimpleUpdater/tree/master/QSimpleUpdater/updater) or realise by yourself.
+File update tool you can find [here](https://github.com/buzzySmile/QSimpleUpdater/tree/master/QSimpleUpdater/updater) or realise by yourself.
 
 Current state
 
@@ -21,11 +21,11 @@ QSimpleUpdater is free and open source [LGPL software](https://www.gnu.org/licen
 
 * Copy/create submodule of `QSimpleUpdater` in your "3rd-party" project folder.
 ```bash
-$ git clone https://github.com/pixraider/QSimpleUpdater.git
+$ git clone https://github.com/buzzySmile/QSimpleUpdater.git
 ```
 or
 ```bash
-$ git submodule add https://github.com/pixraider/QSimpleUpdater.git
+$ git submodule add https://github.com/buzzySmile/QSimpleUpdater.git
 $ git submodule init
 $ git submodule update
 ```
@@ -35,7 +35,7 @@ include($$PWD/third-party/QSimpleUpdater/qsimpleupdater.pri)
 ```
 * Check the example project and taste how it works.
 
-Detail description about integration `QSimpleUpdater` module and file updater tool into your system and platform you could find in **[Wiki](https://github.com/pixraider/QSimpleUpdater/wiki)**.
+Detail description about integration `QSimpleUpdater` module and file updater tool into your system and platform you could find in **[Wiki](https://github.com/buzzySmile/QSimpleUpdater/wiki)**.
 
 ## Organize remote hosting with updates
 
